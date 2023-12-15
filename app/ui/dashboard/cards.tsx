@@ -5,6 +5,7 @@ import {
   InboxIcon,
 } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
+import { fetchCardData } from '@/app/lib/data';
 
 const iconMap = {
   collected: BanknotesIcon,
@@ -30,16 +31,21 @@ export default async function CardWrapper() {
   );
 }
 
-export function Card({
+export async function Card({
   title,
-  value,
   type,
 }: {
   title: string;
-  value: number | string;
   type: 'invoices' | 'customers' | 'pending' | 'collected';
-}) {
+  }) {
+    const {
+    numberOfInvoices,
+    numberOfCustomers,
+    totalPaidInvoices,
+    totalPendingInvoices,
+  } = await fetchCardData()
   const Icon = iconMap[type];
+  
 
   return (
     <div className="rounded-xl bg-gray-50 p-2 shadow-sm">
@@ -51,7 +57,14 @@ export function Card({
         className={`${lusitana.className}
           truncate rounded-xl bg-white px-4 py-8 text-center text-2xl`}
       >
-        {value}
+        {
+          {
+            'invoices': totalPaidInvoices,
+            'customers': numberOfCustomers,
+            'pending': totalPendingInvoices,
+            'collected': totalPaidInvoices,
+          }[type]
+        }
       </p>
     </div>
   );
